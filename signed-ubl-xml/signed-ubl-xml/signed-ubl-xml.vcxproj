@@ -155,7 +155,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="signed-ubl-xml.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="XMLSigner.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Utility.h" />
+    <ClInclude Include="XMLSigner.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="signed-ubl-xml.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
