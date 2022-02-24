@@ -13,16 +13,15 @@ class XMLSigner
 {
 private:
 	CkCert _cert;
-	const char* _certPath = "../Samples/certs/sample.pfx";
-	const char* _certPwd = "pfxPassword";
 	CkXmlDSigGen _gen;
 
 	void SetupDSigGen();
-	bool LoadCertificate();
+	bool LoadCertificate(const char* certPath, const char* certPwd);
 	void SaveSbXml(CkStringBuilder& sb, const char* filepath);
 	bool VerifyXml(CkStringBuilder& sb);
 
 public:
-	bool SignXML(CkXml& doc);
+	XMLSigner(const char* certPath, const char* certPwd);
+	bool SignXML(CkXml& doc, const char* filepath);
 };
 
