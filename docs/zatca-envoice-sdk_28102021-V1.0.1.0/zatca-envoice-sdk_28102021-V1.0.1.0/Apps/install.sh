@@ -1,7 +1,0 @@
-
-FATOORA_HOME="${PWD}"
-
-PATH=$PATH:$FATOORA_HOME/
-export PATH
-
-export FATOORA_HOME
