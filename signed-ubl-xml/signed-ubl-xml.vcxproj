@@ -159,11 +159,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="InvoiceGenerator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="XMLSigner.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Invoice.h" />
+    <ClInclude Include="InvoiceGenerator.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Utility.h" />
     <ClInclude Include="XMLSigner.h" />

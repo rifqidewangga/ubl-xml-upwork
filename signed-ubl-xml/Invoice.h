@@ -1,15 +1,15 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
-struct InvoiceDocumentReference
+struct InvoiceLine
 {
 	std::string ID;
-};
-
-struct BillingReference
-{
-	InvoiceDocumentReference InvoiceDocumentReference;
+	int Quantity;
+	double LineExtensionAmount;
+	std::string Name;
+	double PriceAmount;
 };
 
 struct Invoice
@@ -18,12 +18,23 @@ struct Invoice
 	std::string UUID;
 	std::string IssueDate;
 	std::string IssueTime;
-	
-	std::string InvoiceTypeCodeAttr;
-	int InvoiceTypeCode;
-	
-	std::string DocumentCurrencyCode;
-	std::string TaxCurrencyCode;
 
-	BillingReference BillingReference;
+	std::string BillingReferenceID;
+
+	std::string AdditionalReference1_UUID;
+	std::string PIH;
+	std::string QRCode;
+
+	std::string InstructionNote;
+
+	double TaxAmount;
+	double TaxableAmount;
+	double VATPercent;
+
+	double LineExtensionAmount;
+	double TaxExclusiveAmount;
+	double TaxInclusiveAmount;
+	double PayableAmount;
+
+	std::vector<InvoiceLine> InvoiceLines;
 };

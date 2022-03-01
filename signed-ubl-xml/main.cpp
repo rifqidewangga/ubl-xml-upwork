@@ -8,16 +8,53 @@
 
 #include "Utility.h"
 #include "XMLSigner.h"
-
+#include "Invoice.h"
+#include "InvoiceGenerator.h"
 
 int main()
 {
-    CkXml xmlToSign;
+    Invoice invoice;
+    invoice.ID = 1;
+    invoice.UUID = "3cf5ee18-ee25-44ea-a444-2c37ba7f28be";
+    invoice.IssueDate = "2021-02-25";
+    invoice.IssueTime = "16:55:24";
+
+    invoice.BillingReferenceID = "156166151";
+    
+    invoice.AdditionalReference1_UUID = "46531";
+    invoice.PIH = "NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==";
+    invoice.QRCode = "AQpGaXJzdCBTaG9wAg8zMTAxODkzNzU5MjAwMDMDFDIwMjEtMDEtMDVUMDk6MzI6NDBaBAYyNTAuMDAFBDAuMDAGQDhiMGE1Zjk5YWQ2MjEzZjVmZGJhM2YyZGI4Zjk4OWZiOTkyYzBhYjQ4NmEyOTIyYjIyMWIxNWJjODYzODlkNWEHsDMwNTYzMDEwMDYwNzJhODY0OGNlM2QwMjAxMDYwNTJiODEwNDAwMGEwMzQyMDAwNDk2ZThjNDk0MDNmYzA5NDVjOGY0MDI1OGNkZDJkOWU5MzAxYTc5MjEyYTkzYTdjOGZmYWQ4ZWMyZDgxNWMyNWYyY2I0ZGQ1ZmU1M2ZiOGU3ZDBiNGEwMjZmY2E0NTcyMzUxM2Q3N2MwZTMzOGU5MTUxNjhlNTBkNTk0MDRkYjk0CCBnn5Fhp6qCOBB+MMZTOU3/U3wGIVpnvGnJURw/1cYJ2gkgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    
+    invoice.InstructionNote = "Some notes";
+
+    invoice.TaxAmount = 100.0;
+    invoice.TaxableAmount = 100.0;
+    invoice.VATPercent = 15.00;
+    
+    invoice.LineExtensionAmount = 100.0;
+    invoice.TaxExclusiveAmount = 100.0;
+    invoice.TaxInclusiveAmount = 100.0;
+    invoice.PayableAmount = 100.0;
+
+    InvoiceLine invoiceLine;
+    invoiceLine.ID = "0";
+    invoiceLine.Quantity = 3;
+    invoiceLine.LineExtensionAmount = 100.0;
+    invoiceLine.Name = "Chocolate";
+    invoiceLine.PriceAmount = 100.0;
+
+    invoice.InvoiceLines.push_back(invoiceLine);
+    invoice.InvoiceLines.push_back(invoiceLine);
+
+    InvoiceGenerator gen;
+    gen.Generate(invoice, "../Samples/unsignedDoc.xml");
+
+    /*CkXml xmlToSign;
     PopulateSample(xmlToSign);
     WriteXMLToFile(xmlToSign, "../Samples/unsignedDoc.xml");
 	
     XMLSigner signer("../Samples/certs/gaztCertificate.p12", "123456789");
-    signer.SignXML(xmlToSign, "../Samples/signedDoc.xml");
+    signer.SignXML(xmlToSign, "../Samples/signedDoc.xml");*/
 
     //VerifyXML("../Samples/signedDoc.xml");
 

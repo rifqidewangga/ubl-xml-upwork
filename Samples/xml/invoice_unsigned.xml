@@ -2,6 +2,7 @@
          xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
          xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
          xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
+
   <cbc:ProfileID>reporting:1.0</cbc:ProfileID>
   <cbc:ID>1</cbc:ID>
   <cbc:UUID>3cf5ee18-ee25-44ea-a444-2c37ba7f28be</cbc:UUID>
@@ -10,6 +11,17 @@
   <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
   <cbc:DocumentCurrencyCode>SAR</cbc:DocumentCurrencyCode>
   <cbc:TaxCurrencyCode>SAR</cbc:TaxCurrencyCode>
+  
+  <cac:BillingReference>
+    <cac:InvoiceDocumentReference>
+	  <cbc:ID>”Invoice Number: 354; Invoice Issue Date: 2021-02-10”</cbc:ID>
+    </cac:InvoiceDocumentReference>
+  </cac:BillingReference>
+  
+  <cac:AdditionalDocumentReference>
+    <cbc:ID>ICV</cbc:ID>
+    <cbc:UUID>70</cbc:UUID>
+  </cac:AdditionalDocumentReference>
   
   <cac:AccountingSupplierParty>
     <cac:Party>

@@ -1,157 +1,134 @@
-<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
-         xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
-         xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
-         xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
-   <ext:UBLExtensions>
-      <ext:UBLExtension>
-         <ext:ExtensionURI>urn:oasis:names:specification:ubl:dsig:enveloped:xades</ext:ExtensionURI>
-         <ext:ExtensionContent>
-            <sig:UBLDocumentSignatures xmlns:sac="urn:oasis:names:specification:ubl:schema:xsd:SignatureAggregateComponents-2"
-                                       xmlns:sbc="urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2"
-                                       xmlns:sig="urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2">
-               <sac:SignatureInformation>
-                  <cbc:ID>urn:oasis:names:specification:ubl:signature:1</cbc:ID>
-                  <sbc:ReferencedSignatureID>urn:oasis:names:specification:ubl:signature:Invoice</sbc:ReferencedSignatureID>
-               </sac:SignatureInformation>
-            </sig:UBLDocumentSignatures>
-         </ext:ExtensionContent>
-      </ext:UBLExtension>
-   </ext:UBLExtensions>
-   <cbc:ProfileID>reporting:1.0</cbc:ProfileID>
-   <cbc:ID>935</cbc:ID>
-   <cbc:UUID>3cf5ee18-ee25-44ea-a444-2c37ba7f28be</cbc:UUID>
-   <cbc:IssueDate>2021-01-05</cbc:IssueDate>
-   <cbc:IssueTime>09:32:40</cbc:IssueTime>
-   <cbc:InvoiceTypeCode name="0211010">388</cbc:InvoiceTypeCode>
-   <cbc:DocumentCurrencyCode>SAR</cbc:DocumentCurrencyCode>
-   <cbc:TaxCurrencyCode>SAR</cbc:TaxCurrencyCode>
-   <cac:BillingReference>
-      <cac:InvoiceDocumentReference>
-         <cbc:ID>”Invoice Number: 354; Invoice Issue Date: 2021-02-10”</cbc:ID>
-      </cac:InvoiceDocumentReference>
-   </cac:BillingReference>
-   <cac:AdditionalDocumentReference>
-      <cbc:ID>ICV</cbc:ID>
-      <cbc:UUID>70</cbc:UUID>
-   </cac:AdditionalDocumentReference>
-   <cac:AdditionalDocumentReference>
-      <cbc:ID>PIH</cbc:ID>
-      <cac:Attachment>
-         <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==</cbc:EmbeddedDocumentBinaryObject>
-      </cac:Attachment>
-   </cac:AdditionalDocumentReference>
-   <cac:AdditionalDocumentReference>
-      <cbc:ID>QR</cbc:ID>
-      <cac:Attachment>
-         <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">AQ1PbWFyIEhvc3BpdGFsAg8zMTAxMjIzOTM1MDAwMDMDFDIwMjEtMDEtMDVUMDk6MzI6NDBaBAYyNTAuMDAFBDAuMDAGLGFkQVJGNFlqWlZ1TGN3Y3UwRzVNRWV1YmpqRHVJZVpxUW9wUEI0REd3dkk9B7AzMDU2MzAxMDA2MDcyYTg2NDhjZTNkMDIwMTA2MDUyYjgxMDQwMDBhMDM0MjAwMDQ5NmU4YzQ5NDAzZmMwOTQ1YzhmNDAyNThjZGQyZDllOTMwMWE3OTIxMmE5M2E3YzhmZmFkOGVjMmQ4MTVjMjVmMmNiNGRkNWZlNTNmYjhlN2QwYjRhMDI2ZmNhNDU3MjM1MTNkNzdjMGUzMzhlOTE1MTY4ZTUwZDU5NDA0ZGI5NAgg47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFUJIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</cbc:EmbeddedDocumentBinaryObject>
-      </cac:Attachment>
-   </cac:AdditionalDocumentReference>
-   <cac:Signature>
-      <cbc:ID>urn:oasis:names:specification:ubl:signature:Invoice</cbc:ID>
-      <cbc:SignatureMethod>urn:oasis:names:specification:ubl:dsig:enveloped:xades</cbc:SignatureMethod>
-   </cac:Signature>
-   <cac:AccountingSupplierParty>
-      <cac:Party>
-         <cac:PartyIdentification>
-            <cbc:ID schemeID="CRN">1265126534</cbc:ID>
-         </cac:PartyIdentification>
-         <cac:PostalAddress>
-            <cbc:StreetName>Kemarat Street,</cbc:StreetName>
-            <cbc:BuildingNumber>3724</cbc:BuildingNumber>
-            <cbc:PlotIdentification>9833</cbc:PlotIdentification>
-            <cbc:CitySubdivisionName>Alfalah</cbc:CitySubdivisionName>
-            <cbc:CityName>Jeddah</cbc:CityName>
-            <cbc:PostalZone>15385</cbc:PostalZone>
-            <cbc:CountrySubentity>Makkah</cbc:CountrySubentity>
-            <cac:Country>
-               <cbc:IdentificationCode>SA</cbc:IdentificationCode>
-            </cac:Country>
-         </cac:PostalAddress>
-         <cac:PartyTaxScheme>
-            <cbc:CompanyID>310122393500003</cbc:CompanyID>
-            <cac:TaxScheme>
-               <cbc:ID>VAT</cbc:ID>
-            </cac:TaxScheme>
-         </cac:PartyTaxScheme>
-         <cac:PartyLegalEntity>
-            <cbc:RegistrationName>Omar Hospital</cbc:RegistrationName>
-         </cac:PartyLegalEntity>
-      </cac:Party>
-   </cac:AccountingSupplierParty>
-   <cac:AccountingCustomerParty>
-      <cac:Party>
-         <cac:PartyIdentification>
-            <cbc:ID schemeID="NAT">1010101010</cbc:ID>
-         </cac:PartyIdentification>
-         <cac:PostalAddress>
-            <cbc:StreetName>Kemarat Street,</cbc:StreetName>
-            <cbc:BuildingNumber>3724</cbc:BuildingNumber>
-            <cbc:PlotIdentification>9833</cbc:PlotIdentification>
-            <cbc:CitySubdivisionName>Alfalah</cbc:CitySubdivisionName>
-            <cbc:CityName>Jeddah</cbc:CityName>
-            <cbc:PostalZone>15385</cbc:PostalZone>
-            <cbc:CountrySubentity>Makkah</cbc:CountrySubentity>
-            <cac:Country>
-               <cbc:IdentificationCode>SA</cbc:IdentificationCode>
-            </cac:Country>
-         </cac:PostalAddress>
-         <cac:PartyLegalEntity>
-            <cbc:RegistrationName>Sara Hamad</cbc:RegistrationName>
-         </cac:PartyLegalEntity>
-      </cac:Party>
-   </cac:AccountingCustomerParty>
-   <cac:Delivery>
-      <cbc:ActualDeliveryDate>2022-02-10</cbc:ActualDeliveryDate>
-   </cac:Delivery>
-   <cac:PaymentMeans>
-      <cbc:PaymentMeansCode>42</cbc:PaymentMeansCode>
-      <cbc:InstructionNote>“Returned items”</cbc:InstructionNote>
-   </cac:PaymentMeans>
-   <cac:TaxTotal>
-      <cbc:TaxAmount currencyID="SAR">0.00</cbc:TaxAmount>
-      <cac:TaxSubtotal>
-         <cbc:TaxableAmount currencyID="SAR">0.00</cbc:TaxableAmount>
-         <cbc:TaxAmount currencyID="SAR">0.00</cbc:TaxAmount>
-         <cac:TaxCategory>
-            <cbc:ID>Z</cbc:ID>
-            <cbc:Percent>0</cbc:Percent>
-            <cbc:TaxExemptionReasonCode>VATEX-SA-HEA</cbc:TaxExemptionReasonCode>
-            <cbc:TaxExemptionReason>Private healthcare to citizen</cbc:TaxExemptionReason>
-            <cac:TaxScheme>
-               <cbc:ID>VAT</cbc:ID>
-            </cac:TaxScheme>
-         </cac:TaxCategory>
-      </cac:TaxSubtotal>
-   </cac:TaxTotal>
-   <cac:TaxTotal>
-      <cbc:TaxAmount currencyID="SAR">0.00</cbc:TaxAmount>
-   </cac:TaxTotal>
-   <cac:LegalMonetaryTotal>
-      <cbc:LineExtensionAmount currencyID="SAR">250.00</cbc:LineExtensionAmount>
-      <cbc:TaxExclusiveAmount currencyID="SAR">250.00</cbc:TaxExclusiveAmount>
-      <cbc:TaxInclusiveAmount currencyID="SAR">250.00</cbc:TaxInclusiveAmount>
-      <cbc:PayableAmount currencyID="SAR">250.00</cbc:PayableAmount>
-   </cac:LegalMonetaryTotal>
-   <cac:InvoiceLine>
-      <cbc:ID>18373428</cbc:ID>
-      <cbc:InvoicedQuantity>1</cbc:InvoicedQuantity>
-      <cbc:LineExtensionAmount currencyID="SAR">250.00</cbc:LineExtensionAmount>
-      <cac:TaxTotal>
-         <cbc:TaxAmount currencyID="SAR">0.00</cbc:TaxAmount>
-         <cbc:RoundingAmount currencyID="SAR">250.00</cbc:RoundingAmount>
-      </cac:TaxTotal>
-      <cac:Item>
-         <cbc:Name>Surgery</cbc:Name>
-         <cac:ClassifiedTaxCategory>
-            <cbc:ID>Z</cbc:ID>
-            <cbc:Percent>0</cbc:Percent>
-            <cac:TaxScheme>
-               <cbc:ID>VAT</cbc:ID>
-            </cac:TaxScheme>
-         </cac:ClassifiedTaxCategory>
-      </cac:Item>
-      <cac:Price>
-         <cbc:PriceAmount currencyID="SAR">250.00</cbc:PriceAmount>
-      </cac:Price>
-   </cac:InvoiceLine>
+<?xml version="1.0" encoding="utf-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
+    <ext:UBLExtensions Id="UBLExtensions">
+        <ext:UBLExtension>
+            <ext:ExtensionURI>urn:oasis:names:specification:ubl:dsig:enveloped:xades</ext:ExtensionURI>
+            <ext:ExtensionContent>
+                <sig:UBLDocumentSignatures xmlns:sac="urn:oasis:names:specification:ubl:schema:xsd:SignatureAggregateComponents-2" xmlns:sbc="urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2" xmlns:sig="urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2">
+                    <sac:SignatureInformation>
+                        <cbc:ID>urn:oasis:names:specification:ubl:signature:1</cbc:ID>
+                        <sbc:ReferencedSignatureID>urn:oasis:names:specification:ubl:signature:Invoice</sbc:ReferencedSignatureID>
+                    </sac:SignatureInformation>
+                </sig:UBLDocumentSignatures>
+            </ext:ExtensionContent>
+        </ext:UBLExtension>
+    </ext:UBLExtensions>
+    <cbc:ProfileID>reporting:1.0</cbc:ProfileID>
+    <cbc:ID>1</cbc:ID>
+    <cbc:UUID>3cf5ee18-ee25-44ea-a444-2c37ba7f28be</cbc:UUID>
+    <cbc:IssueDate>2021-02-25</cbc:IssueDate>
+    <cbc:IssueTime>16:55:24</cbc:IssueTime>
+    <cbc:InvoiceTypeCode name="010100">380</cbc:InvoiceTypeCode>
+    <cbc:DocumentCurrencyCode>SAR</cbc:DocumentCurrencyCode>
+    <cbc:TaxCurrencyCode>SAR</cbc:TaxCurrencyCode>
+    <cac:BillingReference>
+        <cac:InvoiceDocumentReference>
+            <cbc:ID>156166151</cbc:ID>
+        </cac:InvoiceDocumentReference>
+    </cac:BillingReference>
+    <cac:AdditionalDocumentReference>
+        <cbc:ID>ICV</cbc:ID>
+        <cbc:UUID>46531</cbc:UUID>
+    </cac:AdditionalDocumentReference>
+    <cac:AdditionalDocumentReference>
+        <cbc:ID>PIH</cbc:ID>
+        <cac:Attachment>
+            <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==</cbc:EmbeddedDocumentBinaryObject>
+        </cac:Attachment>
+    </cac:AdditionalDocumentReference>
+    <cac:AdditionalDocumentReference>
+        <cbc:ID>QR</cbc:ID>
+        <cac:Attachment>
+            <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">AQpGaXJzdCBTaG9wAg8zMTAxODkzNzU5MjAwMDMDFDIwMjEtMDEtMDVUMDk6MzI6NDBaBAYyNTAuMDAFBDAuMDAGQDhiMGE1Zjk5YWQ2MjEzZjVmZGJhM2YyZGI4Zjk4OWZiOTkyYzBhYjQ4NmEyOTIyYjIyMWIxNWJjODYzODlkNWEHsDMwNTYzMDEwMDYwNzJhODY0OGNlM2QwMjAxMDYwNTJiODEwNDAwMGEwMzQyMDAwNDk2ZThjNDk0MDNmYzA5NDVjOGY0MDI1OGNkZDJkOWU5MzAxYTc5MjEyYTkzYTdjOGZmYWQ4ZWMyZDgxNWMyNWYyY2I0ZGQ1ZmU1M2ZiOGU3ZDBiNGEwMjZmY2E0NTcyMzUxM2Q3N2MwZTMzOGU5MTUxNjhlNTBkNTk0MDRkYjk0CCBnn5Fhp6qCOBB+MMZTOU3/U3wGIVpnvGnJURw/1cYJ2gkgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</cbc:EmbeddedDocumentBinaryObject>
+        </cac:Attachment>
+    </cac:AdditionalDocumentReference>
+    <cac:Signature>
+        <cbc:ID>urn:oasis:names:specification:ubl:signature:Invoice</cbc:ID>
+        <cbc:SignatureMethod>urn:oasis:names:specification:ubl:dsig:enveloped:xades</cbc:SignatureMethod>
+    </cac:Signature>
+    <cac:AccountingSupplierParty>
+        <cac:Party>
+            <cac:PostalAddress>
+                <cbc:StreetName>Some street name</cbc:StreetName>
+                <cbc:cbc:BuildingNumber>111</cbc:cbc:BuildingNumber>
+                <cbc:PlotIdentification>asdzxc</cbc:PlotIdentification>
+                <cbc:CityName>AlKhobar, Labor City</cbc:CityName>
+                <cbc:PostalZone>zone</cbc:PostalZone>
+                <cbc:CountrySubentity>subentity</cbc:CountrySubentity>
+                <cbc:CitySubdivisionName>subdiv</cbc:CitySubdivisionName>
+                <cac:Country>
+                    <cbc:IdentificationCode>SA</cbc:IdentificationCode>
+                </cac:Country>
+            </cac:PostalAddress>
+            <cac:PartyTaxScheme>
+                <cbc:CompanyID>ILCACAO</cbc:CompanyID>
+                <cac:TaxScheme>VAT</cac:TaxScheme>
+            </cac:PartyTaxScheme>
+            <cac:PartyLegalEntity>
+                <cbc:RegistrationName>ILCACAO</cbc:RegistrationName>
+            </cac:PartyLegalEntity>
+        </cac:Party>
+    </cac:AccountingSupplierParty>
+    <cac:PaymentMeans>
+        <cbc:InstructionNote>Some notes</cbc:InstructionNote>
+    </cac:PaymentMeans>
+    <cac:TaxTotal>
+        <cbc:TaxAmount currencyID="SAR">100.000000</cbc:TaxAmount>
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="SAR">100.000000</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="SAR">100.000000</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID>Z</cbc:ID>
+                <cbc:Percent>15.000000</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+    </cac:TaxTotal>
+    <cac:TaxTotal>
+        <cbc:TaxAmount currencyID="SAR">100.000000</cbc:TaxAmount>
+    </cac:TaxTotal>
+    <cac:LegalMonetaryTotal>
+        <cbc:LineExtensionAmount currencyID="SAR">100.000000</cbc:LineExtensionAmount>
+        <cbc:TaxExclusiveAmount currencyID="SAR">100.000000</cbc:TaxExclusiveAmount>
+        <cbc:TaxInclusiveAmount currencyID="SAR">100.000000</cbc:TaxInclusiveAmount>
+        <cbc:PayableAmount currencyID="SAR">100.000000</cbc:PayableAmount>
+    </cac:LegalMonetaryTotal>
+    <cac:InvoiceLine>
+        <cbc:ID>0</cbc:ID>
+        <cbc:InvoicedQuantity unitCode="PCE">3</cbc:InvoicedQuantity>
+        <cbc:LineExtensionAmount currencyID="SAR">100.000000</cbc:LineExtensionAmount>
+        <cac:Item>
+            <cbc:Name>Chocolate</cbc:Name>
+            <cac:ClassifiedTaxCategory>
+                <cbc:ID>Z</cbc:ID>
+                <cbc:Percent>15.000000</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:ClassifiedTaxCategory>
+        </cac:Item>
+        <cac:Price>
+            <cbc:PriceAmount currencyID="SAR">100.000000</cbc:PriceAmount>
+        </cac:Price>
+    </cac:InvoiceLine>
+    <cac:InvoiceLine>
+        <cbc:ID>0</cbc:ID>
+        <cbc:InvoicedQuantity unitCode="PCE">3</cbc:InvoicedQuantity>
+        <cbc:LineExtensionAmount currencyID="SAR">100.000000</cbc:LineExtensionAmount>
+        <cac:Item>
+            <cbc:Name>Chocolate</cbc:Name>
+            <cac:ClassifiedTaxCategory>
+                <cbc:ID>Z</cbc:ID>
+                <cbc:Percent>15.000000</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:ClassifiedTaxCategory>
+        </cac:Item>
+        <cac:Price>
+            <cbc:PriceAmount currencyID="SAR">100.000000</cbc:PriceAmount>
+        </cac:Price>
+    </cac:InvoiceLine>
 </Invoice>
