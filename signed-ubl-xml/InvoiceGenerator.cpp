@@ -1,9 +1,14 @@
 #include "InvoiceGenerator.h"
 
+InvoiceGenerator::InvoiceGenerator(const char* certPath, const char* certPwd) : xmlSigner(certPath, certPwd)
+{
+}
+
 void InvoiceGenerator::Generate(Invoice invoice, std::string filepath)
 {
     PopulateXml(invoice);
-    WriteXMLToFile(filepath);
+    WriteXMLToFile("../Samples/unsignedDoc.xml");
+    xmlSigner.SignXML(xmlToSign, filepath.c_str());
 }
 
 void InvoiceGenerator::PopulateXml(Invoice invoice)

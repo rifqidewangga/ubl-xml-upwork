@@ -46,15 +46,8 @@ int main()
     invoice.InvoiceLines.push_back(invoiceLine);
     invoice.InvoiceLines.push_back(invoiceLine);
 
-    InvoiceGenerator gen;
-    gen.Generate(invoice, "../Samples/unsignedDoc.xml");
-
-    /*CkXml xmlToSign;
-    PopulateSample(xmlToSign);
-    WriteXMLToFile(xmlToSign, "../Samples/unsignedDoc.xml");
-	
-    XMLSigner signer("../Samples/certs/gaztCertificate.p12", "123456789");
-    signer.SignXML(xmlToSign, "../Samples/signedDoc.xml");*/
+    InvoiceGenerator gen("../Samples/certs/gaztCertificate.p12", "123456789");
+    gen.Generate(invoice, "../Samples/signedDoc.xml");
 
     //VerifyXML("../Samples/signedDoc.xml");
 
