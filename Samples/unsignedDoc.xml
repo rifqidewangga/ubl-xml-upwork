@@ -73,13 +73,13 @@
         <cbc:InstructionNote>Some notes</cbc:InstructionNote>
     </cac:PaymentMeans>
     <cac:TaxTotal>
-        <cbc:TaxAmount currencyID="SAR">100.000000</cbc:TaxAmount>
+        <cbc:TaxAmount currencyID="SAR">100.00</cbc:TaxAmount>
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="SAR">100.000000</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="SAR">100.000000</cbc:TaxAmount>
+            <cbc:TaxableAmount currencyID="SAR">100.00</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="SAR">100.00</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID>Z</cbc:ID>
-                <cbc:Percent>15.000000</cbc:Percent>
+                <cbc:Percent>15.00</cbc:Percent>
                 <cac:TaxScheme>
                     <cbc:ID>VAT</cbc:ID>
                 </cac:TaxScheme>
@@ -87,48 +87,48 @@
         </cac:TaxSubtotal>
     </cac:TaxTotal>
     <cac:TaxTotal>
-        <cbc:TaxAmount currencyID="SAR">100.000000</cbc:TaxAmount>
+        <cbc:TaxAmount currencyID="SAR">100.00</cbc:TaxAmount>
     </cac:TaxTotal>
     <cac:LegalMonetaryTotal>
-        <cbc:LineExtensionAmount currencyID="SAR">100.000000</cbc:LineExtensionAmount>
-        <cbc:TaxExclusiveAmount currencyID="SAR">100.000000</cbc:TaxExclusiveAmount>
-        <cbc:TaxInclusiveAmount currencyID="SAR">100.000000</cbc:TaxInclusiveAmount>
-        <cbc:PayableAmount currencyID="SAR">100.000000</cbc:PayableAmount>
+        <cbc:LineExtensionAmount currencyID="SAR">100.00</cbc:LineExtensionAmount>
+        <cbc:TaxExclusiveAmount currencyID="SAR">100.00</cbc:TaxExclusiveAmount>
+        <cbc:TaxInclusiveAmount currencyID="SAR">100.00</cbc:TaxInclusiveAmount>
+        <cbc:PayableAmount currencyID="SAR">100.00</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
     <cac:InvoiceLine>
         <cbc:ID>0</cbc:ID>
         <cbc:InvoicedQuantity unitCode="PCE">3</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="SAR">100.000000</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="SAR">100.00</cbc:LineExtensionAmount>
         <cac:Item>
             <cbc:Name>Chocolate</cbc:Name>
             <cac:ClassifiedTaxCategory>
                 <cbc:ID>Z</cbc:ID>
-                <cbc:Percent>15.000000</cbc:Percent>
+                <cbc:Percent>15.00</cbc:Percent>
                 <cac:TaxScheme>
                     <cbc:ID>VAT</cbc:ID>
                 </cac:TaxScheme>
             </cac:ClassifiedTaxCategory>
         </cac:Item>
         <cac:Price>
-            <cbc:PriceAmount currencyID="SAR">100.000000</cbc:PriceAmount>
+            <cbc:PriceAmount currencyID="SAR">100.00</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
     <cac:InvoiceLine>
         <cbc:ID>0</cbc:ID>
         <cbc:InvoicedQuantity unitCode="PCE">3</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="SAR">100.000000</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="SAR">100.00</cbc:LineExtensionAmount>
         <cac:Item>
             <cbc:Name>Chocolate</cbc:Name>
             <cac:ClassifiedTaxCategory>
                 <cbc:ID>Z</cbc:ID>
-                <cbc:Percent>15.000000</cbc:Percent>
+                <cbc:Percent>15.00</cbc:Percent>
                 <cac:TaxScheme>
                     <cbc:ID>VAT</cbc:ID>
                 </cac:TaxScheme>
             </cac:ClassifiedTaxCategory>
         </cac:Item>
         <cac:Price>
-            <cbc:PriceAmount currencyID="SAR">100.000000</cbc:PriceAmount>
+            <cbc:PriceAmount currencyID="SAR">100.00</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
 </Invoice>

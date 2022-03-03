@@ -11,6 +11,17 @@ void InvoiceGenerator::Generate(Invoice invoice, std::string filepath)
     xmlSigner.SignXML(xmlToSign, filepath.c_str());
 }
 
+std::string InvoiceGenerator::GetString(double val)
+{
+    std::ostringstream streamObj;
+    streamObj << std::fixed;
+    streamObj << std::setprecision(2);
+
+    streamObj << val;
+
+    return streamObj.str();
+}
+
 void InvoiceGenerator::PopulateXml(Invoice invoice)
 {
     xmlToSign.Clear();
@@ -69,26 +80,26 @@ void InvoiceGenerator::PopulateXml(Invoice invoice)
     xmlToSign.UpdateChildContent("cac:PaymentMeans|cbc:InstructionNote", invoice.InstructionNote.c_str());
 
     xmlToSign.UpdateAttrAt("cac:TaxTotal|cbc:TaxAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cbc:TaxAmount", std::to_string(invoice.TaxAmount).c_str());
+    xmlToSign.UpdateChildContent("cac:TaxTotal|cbc:TaxAmount", GetString(invoice.TaxAmount).c_str());
     xmlToSign.UpdateAttrAt("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxableAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxableAmount", std::to_string(invoice.TaxableAmount).c_str());
+    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxableAmount", GetString(invoice.TaxableAmount).c_str());
     xmlToSign.UpdateAttrAt("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxAmount", std::to_string(invoice.TaxAmount).c_str());
+    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxAmount", GetString(invoice.TaxAmount).c_str());
     xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:ID", "Z");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:Percent", std::to_string(invoice.VATPercent).c_str());
+    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:Percent", GetString(invoice.VATPercent).c_str());
     xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cac:TaxScheme|cbc:ID", "VAT");
     
     xmlToSign.UpdateAttrAt("cac:TaxTotal[1]|cbc:TaxAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:TaxTotal[1]|cbc:TaxAmount", std::to_string(invoice.TaxAmount).c_str());
+    xmlToSign.UpdateChildContent("cac:TaxTotal[1]|cbc:TaxAmount", GetString(invoice.TaxAmount).c_str());
     
     xmlToSign.UpdateAttrAt("cac:LegalMonetaryTotal|cbc:LineExtensionAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:LineExtensionAmount", std::to_string(invoice.LineExtensionAmount).c_str());
+    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:LineExtensionAmount", GetString(invoice.LineExtensionAmount).c_str());
     xmlToSign.UpdateAttrAt("cac:LegalMonetaryTotal|cbc:TaxExclusiveAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:TaxExclusiveAmount", std::to_string(invoice.TaxExclusiveAmount).c_str());
+    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:TaxExclusiveAmount", GetString(invoice.TaxExclusiveAmount).c_str());
     xmlToSign.UpdateAttrAt("cac:LegalMonetaryTotal|cbc:TaxInclusiveAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:TaxInclusiveAmount", std::to_string(invoice.TaxInclusiveAmount).c_str());
+    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:TaxInclusiveAmount", GetString(invoice.TaxInclusiveAmount).c_str());
     xmlToSign.UpdateAttrAt("cac:LegalMonetaryTotal|cbc:PayableAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:PayableAmount", std::to_string(invoice.PayableAmount).c_str());
+    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:PayableAmount", GetString(invoice.PayableAmount).c_str());
 
     for (int i = 0; i < invoice.InvoiceLines.size(); i++)
     {
@@ -103,7 +114,7 @@ void InvoiceGenerator::PopulateXml(Invoice invoice)
 
         temp = "cac:InvoiceLine[" + std::to_string(i) + "]|cbc:LineExtensionAmount";
         xmlToSign.UpdateAttrAt(temp.c_str(), true, "currencyID", "SAR");
-        xmlToSign.UpdateChildContent(temp.c_str(), std::to_string(invoiceLine.LineExtensionAmount).c_str());
+        xmlToSign.UpdateChildContent(temp.c_str(), GetString(invoiceLine.LineExtensionAmount).c_str());
 
         temp = "cac:InvoiceLine[" + std::to_string(i) + "]|cac:Item|cbc:Name";
         xmlToSign.UpdateChildContent(temp.c_str(), invoiceLine.Name.c_str());
@@ -112,14 +123,14 @@ void InvoiceGenerator::PopulateXml(Invoice invoice)
         xmlToSign.UpdateChildContent(temp.c_str(), "Z");
 
         temp = "cac:InvoiceLine[" + std::to_string(i) + "]|cac:Item|cac:ClassifiedTaxCategory|cbc:Percent";
-        xmlToSign.UpdateChildContent(temp.c_str(), std::to_string(invoice.VATPercent).c_str());
+        xmlToSign.UpdateChildContent(temp.c_str(), GetString(invoice.VATPercent).c_str());
 
         temp = "cac:InvoiceLine[" + std::to_string(i) + "]|cac:Item|cac:ClassifiedTaxCategory|cac:TaxScheme|cbc:ID";
         xmlToSign.UpdateChildContent(temp.c_str(), "VAT");
         
         temp = "cac:InvoiceLine[" + std::to_string(i) + "]|cac:Price|cbc:PriceAmount";
         xmlToSign.UpdateAttrAt(temp.c_str(), true, "currencyID", "SAR");
-        xmlToSign.UpdateChildContent(temp.c_str(), std::to_string(invoiceLine.PriceAmount).c_str());
+        xmlToSign.UpdateChildContent(temp.c_str(), GetString(invoiceLine.PriceAmount).c_str());
     }
 }
 

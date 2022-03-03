@@ -1,6 +1,8 @@
 #pragma once
 
 #include <format>
+#include <sstream>
+#include <iomanip>
 #include <CkXml.h>
 #include <CkStringBuilder.h>
 #include "Invoice.h"
@@ -15,6 +17,8 @@ public:
 private:
 	XMLSigner xmlSigner;
 	CkXml xmlToSign;
+	
+	std::string GetString(double val);
 
 	void PopulateXml(Invoice invoice);
 	void WriteXMLToFile(std::string path);
