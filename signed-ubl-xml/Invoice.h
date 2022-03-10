@@ -10,6 +10,8 @@ struct InvoiceLine
 	double LineExtensionAmount;
 	std::string Name;
 	double PriceAmount;
+	double TaxAmount;
+	double RoundingAmount;
 };
 
 struct Invoice
