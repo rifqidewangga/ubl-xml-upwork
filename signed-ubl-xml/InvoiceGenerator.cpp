@@ -1,14 +1,30 @@
-#include "InvoiceGenerator.h"
+﻿#include "InvoiceGenerator.h"
 
-InvoiceGenerator::InvoiceGenerator(const char* certPath, const char* certPwd) : xmlSigner(certPath, certPwd)
+InvoiceGenerator::InvoiceGenerator()
 {
 }
 
 void InvoiceGenerator::Generate(Invoice invoice, std::string filepath)
 {
     PopulateXml(invoice);
-    WriteXMLToFile("../Samples/unsignedDoc.xml");
-    xmlSigner.SignXML(xmlToSign, filepath.c_str());
+    
+    SaveXmlToSign(filepath);
+    SignXML(filepath);
+
+    // Load back temp_doc
+    signedXml.LoadXml(filepath.c_str());
+    UpdateLastQR();
+    UpdatePIH();
+}
+
+std::string InvoiceGenerator::GetPIH()
+{
+    return PIH;
+}
+
+std::string InvoiceGenerator::GetQR()
+{
+    return lastXmlQR;
 }
 
 std::string InvoiceGenerator::GetString(double val)
@@ -25,19 +41,11 @@ std::string InvoiceGenerator::GetString(double val)
 void InvoiceGenerator::PopulateXml(Invoice invoice)
 {
     xmlToSign.Clear();
+    xmlToSign.put_Utf8(true);
     
     xmlToSign.put_Tag("Invoice");
-    xmlToSign.AddAttribute("xmlns", "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2");
-    xmlToSign.AddAttribute("xmlns:cac", "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2");
-    xmlToSign.AddAttribute("xmlns:cbc", "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2");
-    xmlToSign.AddAttribute("xmlns:ext", "urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2");
-    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionURI", "urn:oasis:names:specification:ubl:dsig:enveloped:xades");
-    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures", true, "xmlns:sac", "urn:oasis:names:specification:ubl:schema:xsd:SignatureAggregateComponents-2");
-    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures", true, "xmlns:sbc", "urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2");
-    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures", true, "xmlns:sig", "urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2");
-    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|cbc:ID", "urn:oasis:names:specification:ubl:signature:1");
-    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|sbc:ReferencedSignatureID", "urn:oasis:names:specification:ubl:signature:Invoice");
-    
+    PopulateUBLExt();
+
     xmlToSign.UpdateChildContent("cbc:ProfileID", "reporting:1.0");
     xmlToSign.UpdateChildContent("cbc:ID", std::to_string(invoice.ID).c_str());
     xmlToSign.UpdateChildContent("cbc:UUID", invoice.UUID.c_str());
@@ -65,33 +73,10 @@ void InvoiceGenerator::PopulateXml(Invoice invoice)
     xmlToSign.UpdateChildContent("cac:Signature|cbc:ID", "urn:oasis:names:specification:ubl:signature:Invoice");
     xmlToSign.UpdateChildContent("cac:Signature|cbc:SignatureMethod", "urn:oasis:names:specification:ubl:dsig:enveloped:xades");
     
-    xmlToSign.UpdateAttrAt("cac:AccountingSupplierParty|cac:Party|cac:PartyIdentification|cbc:ID", true, "schemeID", "CRN");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyIdentification|cbc:ID", "1265126534");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:StreetName", "Kemarat Street,");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:BuildingNumber", "3724");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:PlotIdentification", "9833");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:CitySubdivisionName", "Alfalah");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:CityName", "Jeddah");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:PostalZone", "15385");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:CountrySubentity", "Makkah");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cac:Country|cbc:IdentificationCode", "SA");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyTaxScheme|cbc:CompanyID", "310122393500003");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyTaxScheme|cac:TaxScheme|cbc:ID", "VAT");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyLegalEntity|cbc:RegistrationName", "ILCACAO");
-    
-    xmlToSign.UpdateAttrAt("cac:AccountingCustomerParty|cac:Party|cac:PartyIdentification|cbc:ID", true, "schemeID", "NAT");
-    xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PartyIdentification|cbc:ID", "1010101010");
-    xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cbc:StreetName", "Kemarat Street,");
-    xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cbc:BuildingNumber", "3724");
-    xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cbc:PlotIdentification", "9833");
-    xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cbc:CitySubdivisionName", "Alfalah");
-    xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cbc:CityName", "Jeddah");
-    xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cbc:PostalZone", "15385");
-    xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cbc:CountrySubentity", "Makkah");
-    xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cac:Country|cbc:IdentificationCode", "SA");
-    xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PartyLegalEntity|cbc:RegistrationName", "customer");
+    PopulateSupplierPartyInfo();
+    PopulateCustomerPartyInfo();
 
-    xmlToSign.UpdateChildContent("cac:PaymentMeans|cbc:PaymentMeansCode", "10");
+    xmlToSign.UpdateChildContent("cac:PaymentMeans|cbc:PaymentMeansCode", invoice.PaymentMeansCode.c_str());
     xmlToSign.UpdateChildContent("cac:PaymentMeans|cbc:InstructionNote", invoice.InstructionNote.c_str());
 
     xmlToSign.UpdateAttrAt("cac:TaxTotal|cbc:TaxAmount", true, "currencyID", "SAR");
@@ -100,10 +85,8 @@ void InvoiceGenerator::PopulateXml(Invoice invoice)
     xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxableAmount", GetString(invoice.TaxableAmount).c_str());
     xmlToSign.UpdateAttrAt("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxAmount", true, "currencyID", "SAR");
     xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxAmount", GetString(invoice.TaxAmount).c_str());
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:ID", "Z");
+    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:ID", "S");
     xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:Percent", GetString(invoice.VATPercent).c_str());
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:TaxExemptionReasonCode", "VATEX-SA-HEA");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:TaxExemptionReason", "Private healthcare to citizen");
     xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cac:TaxScheme|cbc:ID", "VAT");
     
     xmlToSign.UpdateAttrAt("cac:TaxTotal[1]|cbc:TaxAmount", true, "currencyID", "SAR");
@@ -142,7 +125,7 @@ void InvoiceGenerator::PopulateXml(Invoice invoice)
         xmlToSign.UpdateChildContent(temp.c_str(), invoiceLine.Name.c_str());
 
         temp = "cac:InvoiceLine[" + std::to_string(i) + "]|cac:Item|cac:ClassifiedTaxCategory|cbc:ID";
-        xmlToSign.UpdateChildContent(temp.c_str(), "Z");
+        xmlToSign.UpdateChildContent(temp.c_str(), "S");
 
         temp = "cac:InvoiceLine[" + std::to_string(i) + "]|cac:Item|cac:ClassifiedTaxCategory|cbc:Percent";
         xmlToSign.UpdateChildContent(temp.c_str(), GetString(invoice.VATPercent).c_str());
@@ -154,9 +137,10 @@ void InvoiceGenerator::PopulateXml(Invoice invoice)
         xmlToSign.UpdateAttrAt(temp.c_str(), true, "currencyID", "SAR");
         xmlToSign.UpdateChildContent(temp.c_str(), GetString(invoiceLine.PriceAmount).c_str());
     }
+}
 
-    /*
-    xmlToSign.put_Tag("Invoice");
+void InvoiceGenerator::PopulateUBLExt()
+{
     xmlToSign.AddAttribute("xmlns", "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2");
     xmlToSign.AddAttribute("xmlns:cac", "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2");
     xmlToSign.AddAttribute("xmlns:cbc", "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2");
@@ -167,40 +151,56 @@ void InvoiceGenerator::PopulateXml(Invoice invoice)
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures", true, "xmlns:sig", "urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2");
     xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|cbc:ID", "urn:oasis:names:specification:ubl:signature:1");
     xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|sbc:ReferencedSignatureID", "urn:oasis:names:specification:ubl:signature:Invoice");
-    xmlToSign.UpdateChildContent("cbc:ProfileID", "reporting:1.0");
-    xmlToSign.UpdateChildContent("cbc:ID", "1");
-    xmlToSign.UpdateChildContent("cbc:UUID", "3cf5ee18-ee25-44ea-a444-2c37ba7f28be");
-    xmlToSign.UpdateChildContent("cbc:IssueDate", "2021-02-25");
-    xmlToSign.UpdateChildContent("cbc:IssueTime", "16:55:24");
-    xmlToSign.UpdateAttrAt("cbc:InvoiceTypeCode", true, "name", "0211010");
-    xmlToSign.UpdateChildContent("cbc:InvoiceTypeCode", "388");
-    xmlToSign.UpdateChildContent("cbc:DocumentCurrencyCode", "SAR");
-    xmlToSign.UpdateChildContent("cbc:TaxCurrencyCode", "SAR");
-    xmlToSign.UpdateChildContent("cac:BillingReference|cac:InvoiceDocumentReference|cbc:ID", "156166151");
-    xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference|cbc:ID", "ICV");
-    xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference|cbc:UUID", "70");
-    xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference[1]|cbc:ID", "PIH");
-    xmlToSign.UpdateAttrAt("cac:AdditionalDocumentReference[1]|cac:Attachment|cbc:EmbeddedDocumentBinaryObject", true, "mimeCode", "text/plain");
-    xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference[1]|cac:Attachment|cbc:EmbeddedDocumentBinaryObject", "NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==");
-    xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference[2]|cbc:ID", "QR");
-    xmlToSign.UpdateAttrAt("cac:AdditionalDocumentReference[2]|cac:Attachment|cbc:EmbeddedDocumentBinaryObject", true, "mimeCode", "text/plain");
-    xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference[2]|cac:Attachment|cbc:EmbeddedDocumentBinaryObject", "AQ1PbWFyIEhvc3BpdGFsAg8zMTAxMjIzOTM1MDAwMDMDFDIwMjEtMDItMjVUMTY6NTU6MjRaBAYyNTAuMDAFBDAuMDAGLDdFQmF1VUxoNlZuYWY2MkhhUGlnR3pZaTYyOWQxVUQ5U2srbWVIUElrSEk9B7AzMDU2MzAxMDA2MDcyYTg2NDhjZTNkMDIwMTA2MDUyYjgxMDQwMDBhMDM0MjAwMDQ5NmU4YzQ5NDAzZmMwOTQ1YzhmNDAyNThjZGQyZDllOTMwMWE3OTIxMmE5M2E3YzhmZmFkOGVjMmQ4MTVjMjVmMmNiNGRkNWZlNTNmYjhlN2QwYjRhMDI2ZmNhNDU3MjM1MTNkNzdjMGUzMzhlOTE1MTY4ZTUwZDU5NDA0ZGI5NAggVbTkjeRbgd+euMq1bJapyUNKIkDT01t2ZKjLHDDjZmcJIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    xmlToSign.UpdateChildContent("cac:Signature|cbc:ID", "urn:oasis:names:specification:ubl:signature:Invoice");
-    xmlToSign.UpdateChildContent("cac:Signature|cbc:SignatureMethod", "urn:oasis:names:specification:ubl:dsig:enveloped:xades");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature", true, "xmlns:ds", "http://www.w3.org/2000/09/xmldsig#");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature", true, "Id", "signature");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:CanonicalizationMethod", true, "Algorithm", "http://www.w3.org/2006/12/xml-c14n11");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:SignatureMethod", true, "Algorithm", "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference", true, "Id", "invoiceSignedData");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference", true, "URI", "");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform", true, "Algorithm", "http://www.w3.org/2006/12/xml-c14n11");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform[1]", true, "Algorithm", "http://www.w3.org/2000/09/xmldsig#enveloped-signature");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform[2]", true, "Algorithm", "http://www.w3.org/TR/1999/REC-xpath-19991116");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform[2]|ds:XPath", "not(ancestor-or-self::ds:Signature)");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:DigestMethod", true, "Algorithm", "http://www.w3.org/2001/04/xmlenc#sha256");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:DigestValue", "dTQq0mG0Mbb7Vxi6jsZvxDzgVpRJFOYGRIqNMjbjarU=");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference[1]", true, "Type", "http://www.w3.org/2000/09/xmldsig#SignatureProperties");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference[1]", true, "URI", "#xadesSignedProperties");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference[1]|ds:DigestMethod", true, "Algorithm", "http://www.w3.org/2001/04/xmlenc#sha256");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference[1]|ds:DigestValue", "d806e96900de6535de473330aef1452db075b4dc1bdc84448b719317a266990a");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignatureValue", "MEUCICTAB4A/h1RJZtqYpiHaD/QdgZs1gSYjQpIzjKPASxQSAiEAn8+wOMQvcFoLqx8fx7/1DPYN7QRFkradGr1/l4hoMKY=");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:KeyInfo|ds:X509Data|ds:X509Certificate", "MIIBmzCCAUECCQDQROomkk8YkDAKBggqhkjOPQQDAjBWMQswCQYDVQQGEwJQTDEQMA4GA1UECAwHU2lsZXNpYTERMA8GA1UEBwwIS2F0b3dpY2UxDTALBgNVBAoMBEdBWlQxEzARBgNVBAMMCkNvbW1vbk5hbWUwIBcNMjEwOTA2MTgwOTA1WhgPNDQ4NTEwMTgxODA5MDVaMFYxCzAJBgNVBAYTAlBMMRAwDgYDVQQIDAdTaWxlc2lhMREwDwYDVQQHDAhLYXRvd2ljZTENMAsGA1UECgwER0FaVDETMBEGA1UEAwwKQ29tbW9uTmFtZTBWMBAGByqGSM49AgEGBSuBBAAKA0IABJboxJQD/AlFyPQCWM3S2ekwGnkhKpOnyP+tjsLYFcJfLLTdX+U/uOfQtKAm/KRXI1E9d8DjOOkVFo5Q1ZQE25QwCgYIKoZIzj0EAwIDSAAwRQIhANULHFfKoroAMgdoUQJ/UwjhD3xHgMeAXjgVpZftENoYAiB7WFgx0hLuJTJbLpYCzpzdpWVOXrIr8g4XvtWKl02j1w==");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties", true, "xmlns:xades", "http://uri.etsi.org/01903/v1.3.2#");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties", true, "Target", "signature");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties", true, "Id", "xadesSignedProperties");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningTime", "2022-03-12T00:44:54Z");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:CertDigest|ds:DigestMethod", true, "Algorithm", "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:CertDigest|ds:DigestValue", "9ef6c0b90ae609868bb614772e1d5375464ed1a1793ded751feb1e3414980f7c");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:IssuerSerial|ds:X509IssuerName", "CN=CommonName,O=GAZT,L=Katowice,ST=Silesia,C=PL");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:IssuerSerial|ds:X509SerialNumber", "15007377309689649296");
+
+}
+
+void InvoiceGenerator::PopulateSupplierPartyInfo()
+{
     xmlToSign.UpdateAttrAt("cac:AccountingSupplierParty|cac:Party|cac:PartyIdentification|cbc:ID", true, "schemeID", "CRN");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyIdentification|cbc:ID", "1265126534");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:StreetName", "Kemarat Street,");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:BuildingNumber", "3724");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:PlotIdentification", "9833");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:CitySubdivisionName", "Alfalah");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:CityName", "Jeddah");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:PostalZone", "15385");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:CountrySubentity", "Makkah");
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyIdentification|cbc:ID", "7001459796");
+
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:StreetName", "Prince Migrin st");
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:BuildingNumber", "7796");
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:PlotIdentification", "4451");
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:CitySubdivisionName", "Labor City");
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:CityName", "Khobar");
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:PostalZone", "34441");
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:CountrySubentity", "Eastern Province");
     xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cac:Country|cbc:IdentificationCode", "SA");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyTaxScheme|cbc:CompanyID", "310122393500003");
+
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyTaxScheme|cbc:CompanyID", "300452385900003");
     xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyTaxScheme|cac:TaxScheme|cbc:ID", "VAT");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyLegalEntity|cbc:RegistrationName", "Omar Hospital");
-    
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyLegalEntity|cbc:RegistrationName", u8"مصنع السكاكرو الحلوى المميزة");
+}
+
+void InvoiceGenerator::PopulateCustomerPartyInfo()
+{
     xmlToSign.UpdateAttrAt("cac:AccountingCustomerParty|cac:Party|cac:PartyIdentification|cbc:ID", true, "schemeID", "NAT");
     xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PartyIdentification|cbc:ID", "1010101010");
     xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cbc:StreetName", "Kemarat Street,");
@@ -212,52 +212,69 @@ void InvoiceGenerator::PopulateXml(Invoice invoice)
     xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cbc:CountrySubentity", "Makkah");
     xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cac:Country|cbc:IdentificationCode", "SA");
     xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PartyLegalEntity|cbc:RegistrationName", "customer");
-    
-    xmlToSign.UpdateChildContent("cac:PaymentMeans|cbc:PaymentMeansCode", "42");
-    xmlToSign.UpdateChildContent("cac:PaymentMeans|cbc:InstructionNote", "Some notes");
-
-    xmlToSign.UpdateAttrAt("cac:TaxTotal|cbc:TaxAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cbc:TaxAmount", "0.00");
-    xmlToSign.UpdateAttrAt("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxableAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxableAmount", "0.00");
-    xmlToSign.UpdateAttrAt("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cbc:TaxAmount", "0.00");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:ID", "Z");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:Percent", "0");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:TaxExemptionReasonCode", "VATEX-SA-HEA");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cbc:TaxExemptionReason", "Private healthcare to citizen");
-    xmlToSign.UpdateChildContent("cac:TaxTotal|cac:TaxSubtotal|cac:TaxCategory|cac:TaxScheme|cbc:ID", "VAT");
-    xmlToSign.UpdateAttrAt("cac:TaxTotal[1]|cbc:TaxAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:TaxTotal[1]|cbc:TaxAmount", "0.00");
-    xmlToSign.UpdateAttrAt("cac:LegalMonetaryTotal|cbc:LineExtensionAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:LineExtensionAmount", "250.00");
-    xmlToSign.UpdateAttrAt("cac:LegalMonetaryTotal|cbc:TaxExclusiveAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:TaxExclusiveAmount", "250.00");
-    xmlToSign.UpdateAttrAt("cac:LegalMonetaryTotal|cbc:TaxInclusiveAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:TaxInclusiveAmount", "250.00");
-    xmlToSign.UpdateAttrAt("cac:LegalMonetaryTotal|cbc:PayableAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:LegalMonetaryTotal|cbc:PayableAmount", "250.00");
-    xmlToSign.UpdateChildContent("cac:InvoiceLine|cbc:ID", "18373428");
-    xmlToSign.UpdateChildContent("cac:InvoiceLine|cbc:InvoicedQuantity", "1");
-    xmlToSign.UpdateAttrAt("cac:InvoiceLine|cbc:LineExtensionAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:InvoiceLine|cbc:LineExtensionAmount", "250.00");
-    xmlToSign.UpdateAttrAt("cac:InvoiceLine|cac:TaxTotal|cbc:TaxAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:InvoiceLine|cac:TaxTotal|cbc:TaxAmount", "0.00");
-    xmlToSign.UpdateAttrAt("cac:InvoiceLine|cac:TaxTotal|cbc:RoundingAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:InvoiceLine|cac:TaxTotal|cbc:RoundingAmount", "250.00");
-    xmlToSign.UpdateChildContent("cac:InvoiceLine|cac:Item|cbc:Name", "Surgery");
-    xmlToSign.UpdateChildContent("cac:InvoiceLine|cac:Item|cac:ClassifiedTaxCategory|cbc:ID", "Z");
-    xmlToSign.UpdateChildContent("cac:InvoiceLine|cac:Item|cac:ClassifiedTaxCategory|cbc:Percent", "0");
-    xmlToSign.UpdateChildContent("cac:InvoiceLine|cac:Item|cac:ClassifiedTaxCategory|cac:TaxScheme|cbc:ID", "VAT");
-    xmlToSign.UpdateAttrAt("cac:InvoiceLine|cac:Price|cbc:PriceAmount", true, "currencyID", "SAR");
-    xmlToSign.UpdateChildContent("cac:InvoiceLine|cac:Price|cbc:PriceAmount", "250.00");
-    */
 }
 
-void InvoiceGenerator::WriteXMLToFile(std::string path)
+void InvoiceGenerator::SaveXmlToSign(std::string path)
 {
-    CkStringBuilder unsignedXML;
-    xmlToSign.GetXmlSb(unsignedXML);
-    unsignedXML.WriteFile(path.c_str(), "utf-8", false);
+    CkStringBuilder sb;
+    xmlToSign.GetXmlSb(sb);
+    sb.WriteFile(path.c_str(), "utf-8", false);
+}
+
+void InvoiceGenerator::SaveSignedXml(std::string path)
+{
+    CkStringBuilder sb;
+    signedXml.GetXmlSb(sb);
+    sb.WriteFile(path.c_str(), "utf-8", false);
+}
+
+void InvoiceGenerator::SignXML(std::string filename)
+{
+    std::string signCMD = "fatoorah.bat generate -f " + filename + " -x -q";
+    system(signCMD.c_str());
+}
+
+void InvoiceGenerator::UpdateLastQR()
+{
+    int childrenNum = signedXml.get_NumChildren();
+    bool qr_found = false;
+
+    for (int i = 0; i < childrenNum; i++)
+    {
+        CkXml* child = signedXml.GetChild(i);
+        
+        if (child->FindChild2("cbc:ID"))
+        {
+            std::string id = child->getChildContent("");
+            if (id == "QR")
+            {
+                child->GetParent2();
+                lastXmlQR = child->getChildContent("cac:Attachment|cbc:EmbeddedDocumentBinaryObject");
+                std::cout << "QR: " << lastXmlQR << std::endl;
+                qr_found = true;
+            }
+        }
+
+        delete child;
+
+        if (qr_found)
+            break;
+    }
+}
+
+void InvoiceGenerator::UpdatePIH()
+{
+    CkXml* child = signedXml.GetChildWithTag("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo");
+    CkXml* grandChild = child->GetChild(2);
+    PIH = grandChild->getChildContent("ds:DigestValue");
+    delete grandChild;
+    delete child;
+
+    /*signedXml.child
+    signedXml.GetChildExact("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo");
+
+    PIH = signedXml.getChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo");*/
+    
+    std::cout << "PIH: " << PIH << std::endl;
 }
 

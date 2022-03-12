@@ -11,15 +11,30 @@
 class InvoiceGenerator
 {
 public:
-	InvoiceGenerator(const char* certPath, const char* certPwd);
+	InvoiceGenerator();
 	void Generate(Invoice invoice, std::string filepath);
 
+	std::string GetPIH();
+	std::string GetQR();
+
 private:
-	XMLSigner xmlSigner;
 	CkXml xmlToSign;
+	CkXml signedXml;
+
+	std::string PIH = "NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==";
+	std::string lastXmlQR;
 	
 	std::string GetString(double val);
 
 	void PopulateXml(Invoice invoice);
-	void WriteXMLToFile(std::string path);
+	void PopulateUBLExt();
+	void PopulateSupplierPartyInfo();
+	void PopulateCustomerPartyInfo();
+
+	void SaveXmlToSign(std::string path);
+	void SaveSignedXml(std::string path);
+
+	void SignXML(std::string filename);
+	void UpdateLastQR();
+	void UpdatePIH();
 };
