@@ -65,9 +65,10 @@ void InvoiceGenerator::PopulateXml(Invoice invoice)
     xmlToSign.UpdateAttrAt("cac:AdditionalDocumentReference[1]|cac:Attachment|cbc:EmbeddedDocumentBinaryObject", true, "mimeCode", "text/plain");
     xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference[1]|cac:Attachment|cbc:EmbeddedDocumentBinaryObject", invoice.PIH.c_str());
     
+    // Placeholder for QR code generated using SDK
     xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference[2]|cbc:ID", "QR");
     xmlToSign.UpdateAttrAt("cac:AdditionalDocumentReference[2]|cac:Attachment|cbc:EmbeddedDocumentBinaryObject", true, "mimeCode", "text/plain");
-    xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference[2]|cac:Attachment|cbc:EmbeddedDocumentBinaryObject", invoice.QRCode.c_str());
+    xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference[2]|cac:Attachment|cbc:EmbeddedDocumentBinaryObject", "");
     
     xmlToSign.UpdateAttrAt("cac:Signature", true, "", "");
     xmlToSign.UpdateChildContent("cac:Signature|cbc:ID", "urn:oasis:names:specification:ubl:signature:Invoice");
@@ -141,6 +142,7 @@ void InvoiceGenerator::PopulateXml(Invoice invoice)
 
 void InvoiceGenerator::PopulateUBLExt()
 {
+    // this node doesn't contain real signature, only a placeholder for SDK to put actual signature
     xmlToSign.AddAttribute("xmlns", "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2");
     xmlToSign.AddAttribute("xmlns:cac", "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2");
     xmlToSign.AddAttribute("xmlns:cbc", "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2");
@@ -154,30 +156,32 @@ void InvoiceGenerator::PopulateUBLExt()
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature", true, "xmlns:ds", "http://www.w3.org/2000/09/xmldsig#");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature", true, "Id", "signature");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:CanonicalizationMethod", true, "Algorithm", "http://www.w3.org/2006/12/xml-c14n11");
-    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:SignatureMethod", true, "Algorithm", "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:SignatureMethod", true, "Algorithm", "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference", true, "Id", "invoiceSignedData");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference", true, "URI", "");
-    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform", true, "Algorithm", "http://www.w3.org/2006/12/xml-c14n11");
-    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform[1]", true, "Algorithm", "http://www.w3.org/2000/09/xmldsig#enveloped-signature");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform", true, "Algorithm", "http://www.w3.org/TR/1999/REC-xpath-19991116");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform|ds:XPath", "not(//ancestor-or-self::ext:UBLExtensions)");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform[1]", true, "Algorithm", "http://www.w3.org/TR/1999/REC-xpath-19991116");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform[1]|ds:XPath", "not(//ancestor-or-self::cac:Signature)");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform[2]", true, "Algorithm", "http://www.w3.org/TR/1999/REC-xpath-19991116");
-    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform[2]|ds:XPath", "not(ancestor-or-self::ds:Signature)");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform[2]|ds:XPath", "not(//ancestor-or-self::cac:AdditionalDocumentReference[cbc:ID='QR'])");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:Transforms|ds:Transform[3]", true, "Algorithm", "http://www.w3.org/2006/12/xml-c14n11");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:DigestMethod", true, "Algorithm", "http://www.w3.org/2001/04/xmlenc#sha256");
-    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:DigestValue", "dTQq0mG0Mbb7Vxi6jsZvxDzgVpRJFOYGRIqNMjbjarU=");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference|ds:DigestValue", "iwpfma1iE/X9uj8tuPmJ+5ksCrSGopIrIhsVvIY4nVo=");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference[1]", true, "Type", "http://www.w3.org/2000/09/xmldsig#SignatureProperties");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference[1]", true, "URI", "#xadesSignedProperties");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference[1]|ds:DigestMethod", true, "Algorithm", "http://www.w3.org/2001/04/xmlenc#sha256");
-    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference[1]|ds:DigestValue", "d806e96900de6535de473330aef1452db075b4dc1bdc84448b719317a266990a");
-    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignatureValue", "MEUCICTAB4A/h1RJZtqYpiHaD/QdgZs1gSYjQpIzjKPASxQSAiEAn8+wOMQvcFoLqx8fx7/1DPYN7QRFkradGr1/l4hoMKY=");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:Reference[1]|ds:DigestValue", "2ab365b063238318fdeac9c2957b135ef8a6727691fc4d81982b5bdd2cec9792");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignatureValue", "MEUCIQD9K68MHIcT1sEjXAsdAIwYOWu20JAHqvgJJU5bWeTZGQIgBoa3h8m1oRbITa1TUat12mxSBqthBGIHfGwwfeHIzmc=");
     xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:KeyInfo|ds:X509Data|ds:X509Certificate", "MIIBmzCCAUECCQDQROomkk8YkDAKBggqhkjOPQQDAjBWMQswCQYDVQQGEwJQTDEQMA4GA1UECAwHU2lsZXNpYTERMA8GA1UEBwwIS2F0b3dpY2UxDTALBgNVBAoMBEdBWlQxEzARBgNVBAMMCkNvbW1vbk5hbWUwIBcNMjEwOTA2MTgwOTA1WhgPNDQ4NTEwMTgxODA5MDVaMFYxCzAJBgNVBAYTAlBMMRAwDgYDVQQIDAdTaWxlc2lhMREwDwYDVQQHDAhLYXRvd2ljZTENMAsGA1UECgwER0FaVDETMBEGA1UEAwwKQ29tbW9uTmFtZTBWMBAGByqGSM49AgEGBSuBBAAKA0IABJboxJQD/AlFyPQCWM3S2ekwGnkhKpOnyP+tjsLYFcJfLLTdX+U/uOfQtKAm/KRXI1E9d8DjOOkVFo5Q1ZQE25QwCgYIKoZIzj0EAwIDSAAwRQIhANULHFfKoroAMgdoUQJ/UwjhD3xHgMeAXjgVpZftENoYAiB7WFgx0hLuJTJbLpYCzpzdpWVOXrIr8g4XvtWKl02j1w==");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties", true, "xmlns:xades", "http://uri.etsi.org/01903/v1.3.2#");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties", true, "Target", "signature");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties", true, "Id", "xadesSignedProperties");
-    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningTime", "2022-03-12T00:44:54Z");
-    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:CertDigest|ds:DigestMethod", true, "Algorithm", "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
+    xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningTime", "2021-02-25T12:57:51Z");
+    xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:CertDigest|ds:DigestMethod", true, "Algorithm", "http://www.w3.org/2001/04/xmlenc#sha256");
     xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:CertDigest|ds:DigestValue", "9ef6c0b90ae609868bb614772e1d5375464ed1a1793ded751feb1e3414980f7c");
     xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:IssuerSerial|ds:X509IssuerName", "CN=CommonName,O=GAZT,L=Katowice,ST=Silesia,C=PL");
     xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:IssuerSerial|ds:X509SerialNumber", "15007377309689649296");
-
 }
 
 void InvoiceGenerator::PopulateSupplierPartyInfo()
@@ -250,7 +254,6 @@ void InvoiceGenerator::UpdateLastQR()
             {
                 child->GetParent2();
                 lastXmlQR = child->getChildContent("cac:Attachment|cbc:EmbeddedDocumentBinaryObject");
-                std::cout << "QR: " << lastXmlQR << std::endl;
                 qr_found = true;
             }
         }
@@ -269,12 +272,4 @@ void InvoiceGenerator::UpdatePIH()
     PIH = grandChild->getChildContent("ds:DigestValue");
     delete grandChild;
     delete child;
-
-    /*signedXml.child
-    signedXml.GetChildExact("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo");
-
-    PIH = signedXml.getChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo");*/
-    
-    std::cout << "PIH: " << PIH << std::endl;
 }
-

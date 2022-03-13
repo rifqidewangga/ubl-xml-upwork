@@ -51,5 +51,8 @@ int main()
 
     gen.Generate(invoice, "../Samples/signedDoc.xml");
 
+    std::cout << "QR: " << gen.GetQR() << std::endl;
+    std::cout << "PIH: " << gen.GetPIH() << std::endl;
+
     return 0;
 }
