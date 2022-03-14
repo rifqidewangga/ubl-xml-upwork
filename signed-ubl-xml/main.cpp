@@ -29,23 +29,23 @@ int main()
     invoice.PaymentMeansCode = "10";
     invoice.InstructionNote = "Some notes";
 
-    invoice.TaxAmount = 0.0;
-    invoice.TaxableAmount = 0.0;
-    invoice.VATPercent = 0.0;
+    invoice.TaxAmount = 33.0; // Total Tax from all invoicelines
+    invoice.TaxableAmount = 220.0;
+    invoice.VATPercent = 15.0;
     
-    invoice.LineExtensionAmount = 250.0;
-    invoice.TaxExclusiveAmount = 250.0;
-    invoice.TaxInclusiveAmount = 250.0;
-    invoice.PayableAmount = 250.0;
+    invoice.LineExtensionAmount = 220.0; // = Total of all invoice price without tax
+    invoice.TaxExclusiveAmount = 220.0; // = LineExtensionAmount
+    invoice.TaxInclusiveAmount = 253.0; // = TaxExclusiveAmount + TaxAmount
+    invoice.PayableAmount = 253.0; // TaxInclusiveAmount
 
     InvoiceLine invoiceLine;
     invoiceLine.ID = "18373428";
     invoiceLine.Quantity = 1;
-    invoiceLine.LineExtensionAmount = 250.0;
-    invoiceLine.Name = u8"شوكولاتة";
-    invoiceLine.PriceAmount = 250.0;
-    invoiceLine.TaxAmount = 0.0;
-    invoiceLine.RoundingAmount = 250.0;
+    invoiceLine.LineExtensionAmount = 220.0;
+    invoiceLine.Name = u8"شكولاته حليب";
+    invoiceLine.PriceAmount = 220.0;
+    invoiceLine.TaxAmount = 33.0; // = VATPercent * LineExtensionAmount
+    invoiceLine.RoundingAmount = 253.0; // = LineExtensionAmount + TaxAmount
 
     invoice.InvoiceLines.push_back(invoiceLine);
 
