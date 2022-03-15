@@ -26,9 +26,10 @@ int main()
     
     invoice.AdditionalReference1_UUID = "70";
     invoice.PIH = gen.GetPIH();
+    // NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==
     
     invoice.PaymentMeansCode = "10";
-    invoice.InstructionNote = "Some notes";
+    invoice.InstructionNote = "Some notessss";
 
     invoice.TaxAmount = 33.0; // Total Tax from all invoicelines
     invoice.TaxableAmount = 220.0;

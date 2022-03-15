@@ -4,11 +4,15 @@
 #include <sstream>
 #include <iomanip>
 #include <chrono>
+#include <fstream>
+#include <iostream>
 
 #include <CkXml.h>
 #include <CkStringBuilder.h>
 #include "Invoice.h"
 #include "XMLSigner.h"
+
+#define PIH_TEMP_FILENAME "pih.txt"
 
 class InvoiceGenerator
 {
@@ -23,7 +27,6 @@ private:
 	CkXml xmlToSign;
 	CkXml signedXml;
 
-	std::string PIH = "NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==";
 	std::string lastXmlQR;
 	
 	std::string GetString(double val);
@@ -56,7 +59,6 @@ inline std::tm localtime_xp(std::time_t timer)
 	return bt;
 }
 
-// default = "YYYY-MM-DD HH:MM:SS"
 inline std::string time_stamp(const std::string& fmt = "%FT%TZ")
 {
 	auto bt = localtime_xp(std::time(0));

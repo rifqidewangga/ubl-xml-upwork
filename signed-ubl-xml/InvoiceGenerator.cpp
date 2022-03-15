@@ -19,7 +19,14 @@ void InvoiceGenerator::Generate(Invoice invoice, std::string filepath)
 
 std::string InvoiceGenerator::GetPIH()
 {
-    return PIH;
+    std::fstream fs;
+    fs.open(PIH_TEMP_FILENAME, std::ios::in);
+
+    std::string pih;
+    std::getline(fs, pih);
+    fs.close();
+
+    return pih;
 }
 
 std::string InvoiceGenerator::GetQR()
@@ -270,7 +277,13 @@ void InvoiceGenerator::UpdatePIH()
 {
     CkXml* child = signedXml.GetChildWithTag("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo");
     CkXml* grandChild = child->GetChild(2);
-    PIH = grandChild->getChildContent("ds:DigestValue");
+    std::string pih = grandChild->getChildContent("ds:DigestValue");
+    
+    std::fstream pih_file;
+    pih_file.open(PIH_TEMP_FILENAME, std::ios::out);
+    pih_file << pih;
+    pih_file.close();
+    
     delete grandChild;
     delete child;
 }
