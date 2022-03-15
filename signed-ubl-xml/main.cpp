@@ -11,6 +11,7 @@
 #include "Invoice.h"
 #include "InvoiceGenerator.h"
 
+
 int main()
 {
     InvoiceGenerator gen;
@@ -18,8 +19,8 @@ int main()
     Invoice invoice;
     invoice.ID = 1;
     invoice.UUID = "3cf5ee18-ee25-44ea-a444-2c37ba7f28be";
-    invoice.IssueDate = "2021-02-25";
-    invoice.IssueTime = "16:55:24";
+    invoice.IssueDate = "2022-03-15";
+    invoice.IssueTime = "07:36:24";
 
     invoice.BillingReferenceID = "156166151";
     
