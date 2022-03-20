@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <sstream>
 #include <iomanip>
 #include <chrono>

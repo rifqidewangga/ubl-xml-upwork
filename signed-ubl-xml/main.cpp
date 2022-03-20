@@ -25,7 +25,8 @@ int main()
     invoice.BillingReferenceID = "156166151";
     
     invoice.AdditionalReference1_UUID = "70";
-    invoice.PIH = gen.GetPIH();
+    // this is the first invoice that I'll generate and using following PIH only for first invoice
+    invoice.PIH = "NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==";
     // NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==
     
     invoice.PaymentMeansCode = "10";
@@ -51,8 +52,18 @@ int main()
 
     invoice.InvoiceLines.push_back(invoiceLine);
 
-    gen.Generate(invoice, "../Samples/signedDoc.xml");
+    gen.Generate(invoice, "../Samples/1signedDoc.xml");
+    std::cout << "QR: " << gen.GetQR() << std::endl;
+    std::cout << "PIH: " << gen.GetPIH() << std::endl;
 
+    // second invoice
+    // Here i have second invoice (only change the PIH)
+    // this PIH should be the hash of the first invoice
+    // I used getpih method to get previous hash which stored in a file
+    // I'll run it
+    invoice.PIH = gen.GetPIH();
+
+    gen.Generate(invoice, "../Samples/2signedDoc.xml");
     std::cout << "QR: " << gen.GetQR() << std::endl;
     std::cout << "PIH: " << gen.GetPIH() << std::endl;
 

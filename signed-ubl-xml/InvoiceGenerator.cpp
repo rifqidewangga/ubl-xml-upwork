@@ -20,7 +20,7 @@ void InvoiceGenerator::Generate(Invoice invoice, std::string filepath)
 std::string InvoiceGenerator::GetPIH()
 {
     std::fstream fs;
-    fs.open(PIH_TEMP_FILENAME, std::ios::in);
+    fs.open(PIH_TEMP_FILENAME, std::fstream::in);
 
     std::string pih;
     std::getline(fs, pih);
@@ -280,7 +280,7 @@ void InvoiceGenerator::UpdatePIH()
     std::string pih = grandChild->getChildContent("ds:DigestValue");
     
     std::fstream pih_file;
-    pih_file.open(PIH_TEMP_FILENAME, std::ios::out);
+    pih_file.open(PIH_TEMP_FILENAME, std::fstream::out);
     pih_file << pih;
     pih_file.close();
     
