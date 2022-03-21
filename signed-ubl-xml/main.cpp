@@ -11,31 +11,31 @@
 #include "Invoice.h"
 #include "InvoiceGenerator.h"
 
-
-int main()
+void demo_simplified_invoice()
 {
     InvoiceGenerator gen;
 
     Invoice invoice;
+    invoice.Type = InvoiceType::Simplified;
     invoice.ID = 1;
     invoice.UUID = "3cf5ee18-ee25-44ea-a444-2c37ba7f28be";
     invoice.IssueDate = "2022-03-15";
     invoice.IssueTime = "07:36:24";
 
     invoice.BillingReferenceID = "156166151";
-    
+
     invoice.AdditionalReference1_UUID = "70";
     // this is the first invoice that I'll generate and using following PIH only for first invoice
     invoice.PIH = "NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==";
     // NWZlY2ViNjZmZmM4NmYzOGQ5NTI3ODZjNmQ2OTZjNzljMmRiYzIzOWRkNGU5MWI0NjcyOWQ3M2EyN2ZiNTdlOQ==
-    
+
     invoice.PaymentMeansCode = "10";
     invoice.InstructionNote = "Some notessss";
 
     invoice.TaxAmount = 33.0; // Total Tax from all invoicelines
     invoice.TaxableAmount = 220.0;
     invoice.VATPercent = 15.0;
-    
+
     invoice.LineExtensionAmount = 220.0; // = Total of all invoice price without tax
     invoice.TaxExclusiveAmount = 220.0; // = LineExtensionAmount
     invoice.TaxInclusiveAmount = 253.0; // = TaxExclusiveAmount + TaxAmount
@@ -66,6 +66,11 @@ int main()
     gen.Generate(invoice, "../Samples/2signedDoc.xml");
     std::cout << "QR: " << gen.GetQR() << std::endl;
     std::cout << "PIH: " << gen.GetPIH() << std::endl;
+}
+
+int main()
+{
+    demo_simplified_invoice();
 
     return 0;
 }

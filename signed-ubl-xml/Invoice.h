@@ -3,6 +3,12 @@
 #include <string>
 #include <vector>
 
+enum InvoiceType
+{
+	Simplified	= 0,
+	Standard	= 1
+};
+
 struct InvoiceLine
 {
 	std::string ID;
@@ -14,8 +20,25 @@ struct InvoiceLine
 	double RoundingAmount;
 };
 
+struct CustomerParty
+{
+	// all of values are default to simplified xml
+	std::string SchemeID = "NAT";
+	std::string ID = "1010101010";
+	std::string StreetName = "Prince Migrin st";
+	std::string BuildingNumber = "7796";
+	std::string PlotIdentification = "4451";
+	std::string CitySubdivisionName = "Labor City";
+	std::string CityName = "Khobar";
+	std::string PostalZone = "34441";
+	std::string CountrySubentity = "Eastern Province";
+	std::string RegistrationName = "Walk In Customer";
+};
+
 struct Invoice
 {
+	InvoiceType Type;
+
 	int ID;
 	std::string UUID;
 	std::string IssueDate;
@@ -39,4 +62,6 @@ struct Invoice
 	double PayableAmount;
 
 	std::vector<InvoiceLine> InvoiceLines;
+
+	CustomerParty CustomerParty;
 };
