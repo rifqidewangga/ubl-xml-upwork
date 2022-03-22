@@ -64,4 +64,6 @@ struct Invoice
 	std::vector<InvoiceLine> InvoiceLines;
 
 	CustomerParty CustomerParty;
+
+	std::string DeliveryDate;
 };

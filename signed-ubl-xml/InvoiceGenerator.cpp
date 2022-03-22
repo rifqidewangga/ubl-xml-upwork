@@ -6,14 +6,8 @@ InvoiceGenerator::InvoiceGenerator()
 
 void InvoiceGenerator::Generate(Invoice invoice, std::string filepath)
 {
-    if (invoice.Type == InvoiceType::Simplified)
-    {
-        PopulateSimplifiedXml(invoice);
-    }
-    else if (invoice.Type == InvoiceType::Standard)
-    {
-        PopulateStandardXml(invoice);
-    }
+    CheckInvoiceType(invoice);
+    PopulateXml(invoice);
     
     SaveXmlToSign(filepath);
     SignXML(filepath);
@@ -52,7 +46,7 @@ std::string InvoiceGenerator::GetString(double val)
     return streamObj.str();
 }
 
-void InvoiceGenerator::PopulateSimplifiedXml(Invoice invoice)
+void InvoiceGenerator::PopulateXml(Invoice invoice)
 {
     InitializeEmptyXml();
 
@@ -65,6 +59,8 @@ void InvoiceGenerator::PopulateSimplifiedXml(Invoice invoice)
     PopulateSupplierPartyInfo();
 
     PopulateCustomerPartyInfo(invoice);
+    
+    PopulateDeliveryDate(invoice);
 
     PopulatePatmentMeans(invoice);
 
@@ -75,8 +71,12 @@ void InvoiceGenerator::PopulateSimplifiedXml(Invoice invoice)
     PopulateInvoiceLines(invoice);
 }
 
-void InvoiceGenerator::PopulateStandardXml(Invoice invoice)
+void InvoiceGenerator::CheckInvoiceType(Invoice invoice)
 {
+    if (invoice.Type != InvoiceType::Simplified && invoice.Type != InvoiceType::Standard)
+    {
+        throw "Not supported InvoiceType";
+    }
 }
 
 void InvoiceGenerator::InitializeEmptyXml()
@@ -99,9 +99,9 @@ void InvoiceGenerator::PopulateUBLExt(Invoice invoice)
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures", true, "xmlns:sig", "urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2");
     xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|cbc:ID", "urn:oasis:names:specification:ubl:signature:1");
 
-    if(invoice.Type == InvoiceType::Simplified)
+    if (invoice.Type == InvoiceType::Simplified)
         xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|sbc:ReferencedSignatureID", "urn:oasis:names:specification:ubl:signature:Invoice");
-    else
+    else if (invoice.Type == InvoiceType::Standard)
         xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|sbc:ReferencedSignatureID", "urn:oasis:names:specification:ubl:signature:Invoicesadas");
 
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature", true, "xmlns:ds", "http://www.w3.org/2000/09/xmldsig#");
@@ -145,10 +145,11 @@ void InvoiceGenerator::PopulateBasicInfo(Invoice invoice)
     
     if (invoice.Type == InvoiceType::Simplified)
         xmlToSign.UpdateAttrAt("cbc:InvoiceTypeCode", true, "name", "0211010");
-    else
+    else if (invoice.Type == InvoiceType::Standard)
         xmlToSign.UpdateAttrAt("cbc:InvoiceTypeCode", true, "name", "0100000");
 
     xmlToSign.UpdateChildContent("cbc:InvoiceTypeCode", "388");
+
     xmlToSign.UpdateChildContent("cbc:DocumentCurrencyCode", "SAR");
     xmlToSign.UpdateChildContent("cbc:TaxCurrencyCode", "SAR");
     xmlToSign.UpdateChildContent("cac:BillingReference|cac:InvoiceDocumentReference|cbc:ID", invoice.BillingReferenceID.c_str());
@@ -206,6 +207,12 @@ void InvoiceGenerator::PopulateCustomerPartyInfo(Invoice invoice)
     xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cbc:CountrySubentity", invoice.CustomerParty.CountrySubentity.c_str());
     xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PostalAddress|cac:Country|cbc:IdentificationCode", "SA");
     xmlToSign.UpdateChildContent("cac:AccountingCustomerParty|cac:Party|cac:PartyLegalEntity|cbc:RegistrationName", invoice.CustomerParty.RegistrationName.c_str());
+}
+
+void InvoiceGenerator::PopulateDeliveryDate(Invoice invoice)
+{
+    if (invoice.Type == InvoiceType::Standard)
+        xmlToSign.UpdateChildContent("cac:Delivery|cbc:ActualDeliveryDate", invoice.DeliveryDate.c_str());
 }
 
 void InvoiceGenerator::PopulatePatmentMeans(Invoice invoice)

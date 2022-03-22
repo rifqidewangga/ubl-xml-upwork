@@ -30,15 +30,16 @@ private:
 	
 	std::string GetString(double val);
 
-	void PopulateSimplifiedXml(Invoice invoice);
-	void PopulateStandardXml(Invoice invoice);
+	void PopulateXml(Invoice invoice);
 
+	void CheckInvoiceType(Invoice invoice);
 	void InitializeEmptyXml();
 	void PopulateUBLExt(Invoice invoice);
 	void PopulateBasicInfo(Invoice invoice);
 	void PopulateDocumentReferences(Invoice invoice);
 	void PopulateSupplierPartyInfo();
 	void PopulateCustomerPartyInfo(Invoice invoice);
+	void PopulateDeliveryDate(Invoice invoice);
 	void PopulatePatmentMeans(Invoice invoice);
 	void PopulateTaxTotal(Invoice invoice);
 	void PopulateLegalMonetaryTotal(Invoice invoice);
