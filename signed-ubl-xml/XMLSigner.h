@@ -23,5 +23,7 @@ private:
 public:
 	XMLSigner(const char* certPath, const char* certPwd);
 	bool SignXML(CkXml& doc, const char* filepath);
+
+	~XMLSigner();
 };
 

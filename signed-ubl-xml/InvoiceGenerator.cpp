@@ -10,7 +10,14 @@ void InvoiceGenerator::Generate(Invoice invoice, std::string filepath)
     PopulateXml(invoice);
     
     SaveXmlToSign(filepath);
-    SignXML(filepath);
+
+#ifdef ZATCA_SDK_SIGNER
+    SignXMLZatcaSDK(filepath);
+#endif // ZATCA_SDK_SIGNER
+
+#ifdef CHILKAT_SIGNER
+    SignXMLChilkat(filepath);
+#endif // CHILKAT_SIGNER
 
     // Load back temp_doc
     signedXml.LoadXml(filepath.c_str());
@@ -103,7 +110,8 @@ void InvoiceGenerator::PopulateUBLExt(Invoice invoice)
         xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|sbc:ReferencedSignatureID", "urn:oasis:names:specification:ubl:signature:Invoice");
     else if (invoice.Type == InvoiceType::Standard)
         xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|sbc:ReferencedSignatureID", "urn:oasis:names:specification:ubl:signature:Invoicesadas");
-
+    
+#ifdef ZATCA_SDK_SIGNER
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature", true, "xmlns:ds", "http://www.w3.org/2000/09/xmldsig#");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature", true, "Id", "signature");
     xmlToSign.UpdateAttrAt("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:SignedInfo|ds:CanonicalizationMethod", true, "Algorithm", "http://www.w3.org/2006/12/xml-c14n11");
@@ -133,6 +141,7 @@ void InvoiceGenerator::PopulateUBLExt(Invoice invoice)
     xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:CertDigest|ds:DigestValue", "9ef6c0b90ae609868bb614772e1d5375464ed1a1793ded751feb1e3414980f7c");
     xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:IssuerSerial|ds:X509IssuerName", "CN=CommonName,O=GAZT,L=Katowice,ST=Silesia,C=PL");
     xmlToSign.UpdateChildContent("ext:UBLExtensions|ext:UBLExtension|ext:ExtensionContent|sig:UBLDocumentSignatures|sac:SignatureInformation|ds:Signature|ds:Object|xades:QualifyingProperties|xades:SignedProperties|xades:SignedSignatureProperties|xades:SigningCertificate|xades:Cert|xades:IssuerSerial|ds:X509SerialNumber", "15007377309689649296");
+#endif // ZATCA_SDK_SIGNER
 }
 
 void InvoiceGenerator::PopulateBasicInfo(Invoice invoice)
@@ -167,6 +176,7 @@ void InvoiceGenerator::PopulateDocumentReferences(Invoice invoice)
     // Placeholder for QR code generated using SDK
     xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference[2]|cbc:ID", "QR");
     xmlToSign.UpdateAttrAt("cac:AdditionalDocumentReference[2]|cac:Attachment|cbc:EmbeddedDocumentBinaryObject", true, "mimeCode", "text/plain");
+
     xmlToSign.UpdateChildContent("cac:AdditionalDocumentReference[2]|cac:Attachment|cbc:EmbeddedDocumentBinaryObject", "");
 
     xmlToSign.UpdateAttrAt("cac:Signature", true, "", "");
@@ -188,9 +198,9 @@ void InvoiceGenerator::PopulateSupplierPartyInfo()
     xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cbc:CountrySubentity", "Eastern Province");
     xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PostalAddress|cac:Country|cbc:IdentificationCode", "SA");
 
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyTaxScheme|cbc:CompanyID", "300452385900003");
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyTaxScheme|cbc:CompanyID", SELLER_VAT_NUMBER);
     xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyTaxScheme|cac:TaxScheme|cbc:ID", "VAT");
-    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyLegalEntity|cbc:RegistrationName", "DCCF");
+    xmlToSign.UpdateChildContent("cac:AccountingSupplierParty|cac:Party|cac:PartyLegalEntity|cbc:RegistrationName", SELLER_NAME);
 }
 
 void InvoiceGenerator::PopulateCustomerPartyInfo(Invoice invoice)
@@ -289,6 +299,18 @@ void InvoiceGenerator::PopulateInvoiceLines(Invoice invoice)
     }
 }
 
+void InvoiceGenerator::InjectQRCode(Invoice invoice)
+{
+    QRCodeData qr;
+    qr.SellersName = QRData("01", SELLER_NAME);
+    qr.VATNumber = QRData("02", SELLER_VAT_NUMBER);
+    qr.Timestamp = QRData("03", time_stamp().c_str());
+    qr.InvoiceTotal = QRData("04", GetString(invoice.LineExtensionAmount).c_str());
+    qr.VATTotal = QRData("05", GetString(invoice.TaxAmount).c_str());
+
+    const char* qr_string;
+}
+
 void InvoiceGenerator::SaveXmlToSign(std::string path)
 {
     CkStringBuilder sb;
@@ -303,9 +325,23 @@ void InvoiceGenerator::SaveSignedXml(std::string path)
     sb.WriteFile(path.c_str(), "utf-8", false);
 }
 
-void InvoiceGenerator::SignXML(std::string filename)
+void InvoiceGenerator::SignXMLZatcaSDK(std::string filename)
 {
     std::string signCMD = "fatoorah.bat generate -f " + filename + " -x -q";
+    system(signCMD.c_str());
+}
+
+void InvoiceGenerator::SignXMLChilkat(std::string filename)
+{
+    XMLSigner signer("gaztCertificate.p12", "123456789");
+    
+    CkXml xmlToSign;
+    if (!xmlToSign.LoadXmlFile(filename.c_str()))
+        throw "Failed to load XML file";
+    
+    signer.SignXML(xmlToSign, filename.c_str());
+
+    std::string signCMD = "fatoorah.bat generate -f " + filename + " -q";
     system(signCMD.c_str());
 }
 

@@ -10,6 +10,7 @@
 #include "XMLSigner.h"
 #include "Invoice.h"
 #include "InvoiceGenerator.h"
+#include "QRGenerator.h"
 
 void demo_simplified_invoice()
 {
@@ -147,10 +148,22 @@ void demo_standard_invoice()
     std::cout << "PIH: " << gen.GetPIH() << std::endl;
 }
 
+void demo_qr_generator()
+{
+    QRCodeData qr;
+    qr.SellersName = QRData("01", "Bobs Records");
+    qr.VATNumber = QRData("02", "310122393500003");
+    qr.Timestamp = QRData("03", "2022-04-25T15:30:00Z");
+    qr.InvoiceTotal = QRData("04", "1000.00");
+    qr.VATTotal = QRData("05", "150.00");
+
+    QRGenerator qr_gen;
+    std::cout << qr_gen.GenerateQRString(qr) << std::endl;
+}
+
 int main()
 {
     demo_simplified_invoice();
-    demo_standard_invoice();
 
     return 0;
 }
