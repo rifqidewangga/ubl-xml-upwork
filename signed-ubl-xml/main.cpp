@@ -164,6 +164,7 @@ void demo_qr_generator()
 int main()
 {
     demo_simplified_invoice();
+    demo_standard_invoice();
 
     return 0;
 }

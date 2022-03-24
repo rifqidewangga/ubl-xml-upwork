@@ -309,6 +309,8 @@ void InvoiceGenerator::InjectQRCode(Invoice invoice)
     qr.VATTotal = QRData("05", GetString(invoice.TaxAmount).c_str());
 
     const char* qr_string;
+
+    // TODO: implement QRCode generator if chilkat is used
 }
 
 void InvoiceGenerator::SaveXmlToSign(std::string path)
@@ -341,8 +343,8 @@ void InvoiceGenerator::SignXMLChilkat(std::string filename)
     
     signer.SignXML(xmlToSign, filename.c_str());
 
-    std::string signCMD = "fatoorah.bat generate -f " + filename + " -q";
-    system(signCMD.c_str());
+    //std::string signCMD = "fatoorah.bat generate -f " + filename + " -q";
+    //system(signCMD.c_str());
 }
 
 void InvoiceGenerator::UpdateLastQR()
