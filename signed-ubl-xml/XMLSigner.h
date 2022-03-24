@@ -8,6 +8,7 @@
 #include <CkStringBuilder.h>
 #include <CkXmlDSig.h>
 
+//#define CHILKAT_PRE_RELEASE
 
 class XMLSigner
 {

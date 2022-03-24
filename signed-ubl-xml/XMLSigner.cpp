@@ -35,7 +35,10 @@ void XMLSigner::SetupDSigGen()
     xml1.UpdateChildContent("ds:Transform[2]|ds:XPath", "not(//ancestor-or-self::cac:AdditionalDocumentReference[cbc:ID='QR'])");
     xml1.UpdateAttrAt("ds:Transform[3]", true, "Algorithm", "http://www.w3.org/2006/12/xml-c14n11");
 
+#ifdef CHILKAT_PRE_RELEASE
     _gen.AddSameDocRef2("", "sha256", xml1, "");
+#endif // CHILKAT_PRE_RELEASE
+
     _gen.SetRefIdAttr("", "invoiceSignedData");
 
     // -------- Reference 2 --------
