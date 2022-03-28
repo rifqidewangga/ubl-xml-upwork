@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="InvoiceGenerator.cpp" />
+    <ClCompile Include="InvoiceUploader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="QRGenerator.cpp" />
     <ClCompile Include="XMLSigner.cpp" />
@@ -167,6 +168,7 @@
   <ItemGroup>
     <ClInclude Include="Invoice.h" />
     <ClInclude Include="InvoiceGenerator.h" />
+    <ClInclude Include="InvoiceUploader.h" />
     <ClInclude Include="QRCodeData.h" />
     <ClInclude Include="QRGenerator.h" />
     <ClInclude Include="resource.h" />
